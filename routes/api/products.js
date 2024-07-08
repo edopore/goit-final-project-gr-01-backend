@@ -3,7 +3,7 @@
  * tags:
  *  name: Products
  *  description: API para administracion de productos permitidos y no permitidos
- * products/:
+ * /products/:
  *  get:
  *      tags: [Products]
  *      summary: Obtiene listado de alimentos según búsqueda
@@ -35,7 +35,7 @@
  *                  application/json:
  *                      schema:
  *                          $ref: '#/components/error/internal'
- * productos/blacklist:
+ * /products/blacklist:
  *  post:
  *      tags: [Products]
  *      summary: Obtiene listado de alimentos no recomendables para consumo de acuerdo a calculo de calorías
