@@ -1,4 +1,5 @@
 const Calorias = require("../../models/calorias");
+const { Product } = require("../../schema/productSchema");
 const { calculateDailyCalories } = require("../../utils/calculateCalories");
 
 const calculateCaloriesById = async (req, res) => {
@@ -38,7 +39,7 @@ const calculateCaloriesById = async (req, res) => {
       });
     }
 
-    const alimentosNoRecomendados = getAlimentosNoRecomendados(bloodType);
+    const alimentosNoRecomendados = await getAlimentosNoRecomendados(bloodType);
 
     const nuevaCaloria = new Calorias({
       usuarioId: userId,
@@ -69,6 +70,7 @@ const calculateCaloriesById = async (req, res) => {
 
 const calculateCaloriesNoId = async (req, res) => {
   try {
+    console.log(req.body);
     const { height, age, currentWeight, desiredWeight, bloodType } = req.body;
     // Verificaciones detalladas
     if (!height) {
@@ -102,7 +104,7 @@ const calculateCaloriesNoId = async (req, res) => {
       });
     }
 
-    const alimentosNoRecomendados = getAlimentosNoRecomendados(bloodType);
+    const alimentosNoRecomendados = await getAlimentosNoRecomendados(bloodType);
 
     res.status(201).json({
       message: "Consumo calórico calculado exitosamente",
@@ -118,14 +120,33 @@ const calculateCaloriesNoId = async (req, res) => {
   }
 };
 
-const getAlimentosNoRecomendados = (bloodType) => {
-  const alimentos = {
-    1: ["Alimento1", "Alimento2"],
-    2: ["Alimento3", "Alimento4"],
-    3: ["Alimento5", "Alimento6"],
-    4: ["Alimento7", "Alimento8"],
-  };
-  return alimentos[bloodType] || [];
+const getAlimentosNoRecomendados = async (bloodType) => {
+  let getProductsBanned = [];
+  switch (bloodType) {
+    case 1:
+      getProductsBanned = await Product.find({
+        "groupBloodNotAllowed.1": true,
+      }).exec();
+      break;
+    case 2:
+      getProductsBanned = await Product.find({
+        "groupBloodNotAllowed.2": true,
+      }).exec();
+      break;
+    case 3:
+      getProductsBanned = await Product.find({
+        "groupBloodNotAllowed.3": true,
+      }).exec();
+      break;
+    case 4:
+      getProductsBanned = await Product.find({
+        "groupBloodNotAllowed.4": true,
+      }).exec();
+      break;
+    default:
+      break;
+  }
+  return getProductsBanned;
 };
 
 module.exports = { calculateCaloriesById, calculateCaloriesNoId };
